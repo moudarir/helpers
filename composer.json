@@ -1,0 +1,47 @@
+{
+  "name": "moudarir/helpers",
+  "description": "A collection of lightweight, dependency-free PHP helper classes.",
+  "type": "library",
+  "homepage": "https://github.com/moudarir/helpers",
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "helpers",
+    "utilities",
+    "utility",
+    "array",
+    "directory",
+    "string"
+  ],
+  "authors": [
+    {
+      "name": "Abdessamad MOUDARIR",
+      "email": "amoudarir@gmail.com"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/moudarir/helpers/issues",
+    "source": "https://github.com/moudarir/helpers"
+  },
+  "require": {
+    "php": ">=8.4"
+  },
+  "autoload": {
+    "psr-4" : {
+      "Moudarir\\Helpers\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Moudarir\\Helpers\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^13.0"
+  },
+  "scripts": {
+    "server-start": "bash examples/server-start.sh",
+    "server-stop": "bash examples/server-stop.sh",
+    "test": "phpunit tests/Unit"
+  }
+}
