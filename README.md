@@ -1,6 +1,6 @@
 # Moudarir Helpers
 
-A collection of lightweight, dependency-free PHP helper classes.
+A collection of lightweight PHP helper classes with minimal external dependencies.
 
 ## Table of contents
 
@@ -8,11 +8,15 @@ A collection of lightweight, dependency-free PHP helper classes.
 - [Installation](#installation)
 - [Available Helpers](#available-helpers)
   - [Array Helper](#arrayhelper)
+  - [String Helper](#stringhelper)
+  - [Is Helper](#ishelper)
 - [License](#license)
 
 ## Requirements
 
 - PHP 8.4 or higher
+- ext-ctype
+- ext-mbstring
 
 ## Installation
 
@@ -58,8 +62,89 @@ Extracts the `src` attributes from `<img>` elements contained in an HTML string.
 
 The method supports both single and double quotes and performs a case-insensitive search.
 
-See the [ArrayHelper documentation](/docs/ArrayHelper.md).
+See the [ArrayHelper documentation](docs/ArrayHelper.md).
+
+### StringHelper
+
+`StringHelper` provides lightweight utility methods for common string operations, including extracting first letters, converting strings to camelCase, formatting byte sizes, and generating text excerpts.
+
+#### `firstLetter()`
+
+Returns the first character of a string with Unicode-aware case conversion.
+
+#### `firstLetters()`
+
+Extracts the first character of each word and joins them using a configurable separator.
+
+#### `toCamelcase()`
+
+Converts a separator-delimited string to camelCase.
+
+#### `bytesToHuman()`
+
+Converts a byte value into a human-readable representation using either binary (1024) or decimal (1000) units.
+
+#### `excerpt()`
+
+Creates a shortened text excerpt while removing HTML tags and supporting configurable ellipsis placement.
+
+See the [StringHelper documentation](docs/StringHelper.md).
+
+### IsHelper
+
+`IsHelper` provides lightweight validation helpers for URLs, IP addresses, email addresses, MAC addresses, Base64 strings, numbers, hexadecimal values, and Arabic text.
+
+#### `validUrl()`
+
+Validates a URL and supports restricting the allowed protocols through `EnumProtocol`.
+
+#### `validIP()`
+
+Validates IPv4 and IPv6 addresses, optionally restricted to a specific IP version.
+
+#### `validEmail()`
+
+Validates an email address, including internationalized domains when supported by the environment.
+
+#### `validMac()`
+
+Validates a MAC address.
+
+#### `validBase64()`
+
+Validates a Base64-encoded string.
+
+#### `natural()` and `naturalNoZero()`
+
+Validate natural number strings, with `naturalNoZero()` excluding zero.
+
+#### `alpha()` and `alphaNumeric()`
+
+Validate alphabetic and alphanumeric strings.
+
+#### `alphaNumericSpaces()`
+
+Validates strings containing only letters, numbers, and spaces.
+
+#### `alphaDash()`, `alnumDash()`, and `alnumUnderscore()`
+
+Validate strings using common combinations of letters, numbers, hyphens, and underscores.
+
+#### `numeric()`, `integer()`, and `decimal()`
+
+Validate numeric string representations.
+
+#### `hex()`
+
+Validates hexadecimal values with an optional `0x` or `0X` prefix.
+
+#### `containsArabic()` and `onlyArabic()`
+
+`containsArabic()` checks whether a string contains Arabic characters, while `onlyArabic()` ensures that the string contains no letters from another script.
+
+See the [IsHelper documentation](docs/IsHelper.md).
+
 
 ## License
 
-This package is open-sourced software licensed under the MIT license.
+This package is open-sourced software licensed under the [MIT license](LICENSE).

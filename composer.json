@@ -24,7 +24,9 @@
     "source": "https://github.com/moudarir/helpers"
   },
   "require": {
-    "php": ">=8.4"
+    "php": ">=8.4",
+    "ext-ctype": "*",
+    "ext-mbstring": "*"
   },
   "autoload": {
     "psr-4" : {

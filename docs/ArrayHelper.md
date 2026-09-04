@@ -4,35 +4,57 @@
 
 ## Available Methods
 
-- [`diff()`](#diff)
-- [`ids()`](#ids)
-- [`toInt()`](#toint)
-- [`toString()`](#tostring)
-- [`extractImgSrc()`](#extractimgsrc)
+* [`diff()`](#diff)
+* [`ids()`](#ids)
+* [`toInt()`](#toint)
+* [`toString()`](#tostring)
+* [`extractImgSrc()`](#extractimgsrc)
 
-### `diff()`
+## `diff()`
 
 Compares two arrays and returns their differences.
 
-The `default` array represents the existing values, while the `new` array represents the new values.
+The `$default` array represents the existing values, while the `$new` array represents the new values.
+
+### Signature
 
 ```php
+ArrayHelper::diff(
+    array $default,
+    array $new,
+    bool $asIds = false
+): array
+```
+
+### Parameters
+
+* `$default` — The existing values.
+* `$new` — The new values.
+* `$asIds` — When `true`, values from `$new` are converted to integers before comparison.
+
+### Return value
+
+Returns an array containing:
+
+* `diff` — `true` when values have been added or removed, otherwise `false`.
+* `add` — Values present in `$new` but not in `$default`.
+* `remove` — Values present in `$default` but not in `$new`.
+
+### Examples
+
+```php
+use Moudarir\Helpers\ArrayHelper;
+
 $result = ArrayHelper::diff([1, 2, 3], [2, 3, 4]);
+
+// [
+//     'diff' => true,
+//     'add' => [4],
+//     'remove' => [1],
+// ]
 ```
 
-The result contains three keys:
-
-```php
-[
-    'diff' => true,
-    'add' => [4],
-    'remove' => [1],
-]
-```
-
-`diff` is `true` when values have been added or removed.
-
-When the arrays contain the same values:
+When both arrays contain the same values:
 
 ```php
 $result = ArrayHelper::diff([1, 2, 3], [1, 2, 3]);
@@ -44,7 +66,7 @@ $result = ArrayHelper::diff([1, 2, 3], [1, 2, 3]);
 // ]
 ```
 
-Set `$asIds` to `true` to convert values from the `$new` array to integers before comparing:
+Set `$asIds` to `true` to convert values from `$new` to integers before comparing:
 
 ```php
 $result = ArrayHelper::diff([1, 2, 3], ['2', '3', '4'], true);
@@ -56,9 +78,35 @@ $result = ArrayHelper::diff([1, 2, 3], ['2', '3', '4'], true);
 // ]
 ```
 
-### `ids()`
+The returned arrays preserve the keys produced by the underlying array comparison.
 
-Extracts values from a specific `key` of arrays or objects.
+---
+
+## `ids()`
+
+Extracts values associated with a specified key from an array of arrays or objects.
+
+Missing keys and `null` values are ignored.
+
+### Signature
+
+```php
+ArrayHelper::ids(
+    array $items,
+    string $key = 'id'
+): array
+```
+
+### Parameters
+
+* `$items` — An array containing arrays or objects.
+* `$key` — The key or property to extract. Defaults to `'id'`.
+
+### Return value
+
+Returns the extracted values as a reindexed list.
+
+### Examples
 
 ```php
 use Moudarir\Helpers\ArrayHelper;
@@ -73,7 +121,7 @@ $ids = ArrayHelper::ids($rows);
 // [10, 20]
 ```
 
-The `key` can be customized:
+The key can be customized:
 
 ```php
 $rows = [
@@ -114,9 +162,39 @@ $ids = ArrayHelper::ids($rows);
 // [10, 20]
 ```
 
-### `toInt()`
+---
 
-Converts valid integer values to integers.
+## `toInt()`
+
+Converts valid integer values and integer strings to integers.
+
+By default, only positive integers are accepted.
+
+### Signature
+
+```php
+ArrayHelper::toInt(
+    array|int|string|null $values,
+    bool $onlyPositive = true,
+    bool $unique = false
+): array
+```
+
+### Parameters
+
+* `$values` — An array, integer, string, or `null`.
+* `$onlyPositive` — When `true`, only positive integers are accepted. Defaults to `true`.
+* `$unique` — When `true`, duplicate integer values are removed.
+
+### Return value
+
+Returns an array containing the valid integer values.
+
+Invalid values are ignored.
+
+`null` returns an empty array.
+
+### Examples
 
 By default, only positive integers are accepted:
 
@@ -134,7 +212,7 @@ $values = ArrayHelper::toInt([123, '456', 0, -10, '-20'], false);
 // [123, 456, 0, -10, -20]
 ```
 
-Integer strings must use the decimal representation without leading zeros or surrounding whitespace.
+Integer strings must use decimal notation without leading zeros, a leading plus sign, or surrounding whitespace.
 
 For example:
 
@@ -168,11 +246,41 @@ $value = ArrayHelper::toInt(null);
 // []
 ```
 
-### `toString()`
+---
 
-Converts values to strings.
+## `toString()`
+
+Converts integer and string values to strings.
+
+### Signature
 
 ```php
+ArrayHelper::toString(
+    array|int|string|null $values,
+    bool $rejectEmpty = true,
+    bool $unique = false
+): array
+```
+
+### Parameters
+
+* `$values` — An array, integer, string, or `null`.
+* `$rejectEmpty` — When `true`, empty values are rejected. Defaults to `true`.
+* `$unique` — When `true`, duplicate string values are removed.
+
+### Return value
+
+Returns an array containing the converted string values.
+
+Invalid or rejected values are ignored.
+
+`null` returns an empty array.
+
+### Examples
+
+```php
+use Moudarir\Helpers\ArrayHelper;
+
 $values = ArrayHelper::toString([123, 456]);
 
 // ['123', '456']
@@ -194,7 +302,7 @@ $values = ArrayHelper::toString(['', 'foo', null, 'bar'], false);
 // ['', 'foo', '', 'bar']
 ```
 
-> If `$rejectEmpty` is set to `false`, the `null` values are converted to empty strings `''`.
+> When `$rejectEmpty` is `false`, `null` values are converted to empty strings `''`.
 
 The `$unique` option removes duplicate values:
 
@@ -220,11 +328,35 @@ $value = ArrayHelper::toString(null);
 // []
 ```
 
-### `extractImgSrc()`
+---
+
+## `extractImgSrc()`
 
 Extracts the `src` attributes from HTML `<img>` elements.
 
+The search is case-insensitive and supports both single and double quotes.
+
+### Signature
+
 ```php
+ArrayHelper::extractImgSrc(string $html): array
+```
+
+### Parameters
+
+* `$html` — The HTML content to search.
+
+### Return value
+
+Returns an array containing the extracted `src` attribute values.
+
+An empty array is returned when no image source is found.
+
+### Examples
+
+```php
+use Moudarir\Helpers\ArrayHelper;
+
 $content = <<<'HTML'
 <img src="image-1.jpg">
 <img src="image-2.png">
@@ -261,4 +393,10 @@ $sources = ArrayHelper::extractImgSrc($content);
 // ['image-1.jpg', 'image-2.png']
 ```
 
-An empty array is returned when no image source is found.
+When no image source is found:
+
+```php
+$sources = ArrayHelper::extractImgSrc('<p>Lorem ipsum</p>');
+
+// []
+```
