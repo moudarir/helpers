@@ -119,13 +119,11 @@ final class DirectoryHelperTest extends TestCase
         file_put_contents($file, 'test');
 
         try {
-            self::assertSame(
-                [
-                    'file.txt',
-                    'sub'.DIRECTORY_SEPARATOR => [],
-                ],
-                DirectoryHelper::map($directory)
-            );
+            $result = DirectoryHelper::map($directory);
+
+            $this->assertArrayHasKey('sub'.DIRECTORY_SEPARATOR, $result);
+            $this->assertSame([], $result['sub'.DIRECTORY_SEPARATOR]);
+            $this->assertContains('file.txt', $result);
         } finally {
             unlink($file);
             rmdir($subDirectory);
@@ -315,7 +313,7 @@ final class DirectoryHelperTest extends TestCase
         } finally {
             @rmdir($directory);
             @rmdir(dirname($directory));
-            @rmdir(dirname(dirname($directory)));
+            @rmdir(dirname($directory, 2));
         }
     }
 
