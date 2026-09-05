@@ -28,7 +28,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ctype, mbstring
+          extensions: ctype, mbstring, sodium
           tools: composer:v2
           coverage: none
 

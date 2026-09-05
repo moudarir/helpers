@@ -1,6 +1,6 @@
 {
   "name": "moudarir/helpers",
-  "description": "A collection of lightweight, dependency-free PHP helper classes.",
+  "description": "A collection of lightweight PHP helper classes with minimal external dependencies.",
   "type": "library",
   "homepage": "https://github.com/moudarir/helpers",
   "license": "MIT",
@@ -24,9 +24,12 @@
     "source": "https://github.com/moudarir/helpers"
   },
   "require": {
-    "php": ">=8.4",
-    "ext-ctype": "*",
-    "ext-mbstring": "*"
+    "php": ">=8.4"
+  },
+  "suggest": {
+    "ext-ctype": "Required by IsHelper",
+    "ext-mbstring": "Required by StringHelper",
+    "ext-sodium": "Required by EncryptionHelper"
   },
   "autoload": {
     "psr-4" : {

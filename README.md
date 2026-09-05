@@ -10,13 +10,20 @@ A collection of lightweight PHP helper classes with minimal external dependencie
   - [Array Helper](#arrayhelper)
   - [String Helper](#stringhelper)
   - [Is Helper](#ishelper)
+  - [Encryption Helper](#encryptionhelper)
+  - [File Helper](#filehelper)
+  - [Directory Helper](#directoryhelper)
 - [License](#license)
 
 ## Requirements
 
 - PHP 8.4 or higher
-- ext-ctype
-- ext-mbstring
+
+Some helpers require additional PHP extensions:
+
+- `ext-ctype` for `IsHelper`;
+- `ext-mbstring` for `StringHelper`;
+- `ext-sodium` for `EncryptionHelper`.
 
 ## Installation
 
@@ -144,6 +151,83 @@ Validates hexadecimal values with an optional `0x` or `0X` prefix.
 
 See the [IsHelper documentation](docs/IsHelper.md).
 
+### EncryptionHelper
+
+`EncryptionHelper` provides helpers for cryptographically secure random data, token generation, and authenticated symmetric encryption.
+
+#### `binaryBytes()`
+
+Generates cryptographically secure random bytes.
+
+#### `generateToken()`
+
+Generates cryptographically secure random tokens using configurable character sets and multiple parts.
+
+#### `encrypt()`
+
+Encrypts data using Sodium's authenticated `secretbox` encryption.
+
+#### `decrypt()`
+
+Decrypts data previously encrypted with `encrypt()`.
+
+See the [EncryptionHelper documentation](docs/EncryptionHelper.md).
+
+### FileHelper
+
+`FileHelper` provides lightweight helpers for common file and path operations.
+
+#### `newFilename()`
+
+Generates an available filename while preserving the original file extension, with support for random or incremental filenames.
+
+#### `pathInfo()`
+
+Returns normalized information extracted from a file path.
+
+#### `info()`
+
+Returns metadata and optional filesystem information for an existing file.
+
+#### `write()`
+
+Writes data to a file with exclusive locking and support for partial writes.
+
+#### `getContent()`
+
+Reads the contents of a local file or URL.
+
+#### `saveContent()`
+
+Saves string data to a file and reports failures through `ErrorException`.
+
+See the [FileHelper documentation](docs/FileHelper.md).
+
+### DirectoryHelper
+
+`DirectoryHelper` provides lightweight helpers for common directory operations.
+
+#### `recursively()`
+
+Returns all descendant directories recursively.
+
+#### `map()`
+
+Builds an array representation of a directory with configurable recursion, hidden-entry handling, and path output.
+
+#### `create()`
+
+Creates a directory and all missing parent directories.
+
+#### `getFilesInfo()`
+
+Returns information about files in a directory, with optional recursion.
+
+#### `deleteFiles()`
+
+Deletes directory contents recursively, with optional directory removal and protection of common web server files.
+
+See the [DirectoryHelper documentation](docs/DirectoryHelper.md).
 
 ## License
 
