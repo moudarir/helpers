@@ -1,5 +1,7 @@
 # Moudarir Helpers
 
+[![Latest Version](https://img.shields.io/packagist/v/moudarir/helpers?style=flat-square)](https://packagist.org/packages/moudarir/helpers) [![Tests](https://github.com/moudarir/helpers/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/moudarir/helpers/actions/workflows/tests.yml) [![PHP Version Require](https://img.shields.io/packagist/dependency-v/moudarir/helpers/php?color=%238892bf&style=flat-square)](https://packagist.org/packages/moudarir/helpers) [![License](https://img.shields.io/packagist/l/moudarir/helpers.svg?style=flat-square)](https://github.com/moudarir/helpers/blob/main/LICENSE)
+
 A collection of lightweight PHP helper classes with minimal external dependencies.
 
 ## Table of contents
@@ -13,6 +15,9 @@ A collection of lightweight PHP helper classes with minimal external dependencie
   - [Encryption Helper](#encryptionhelper)
   - [File Helper](#filehelper)
   - [Directory Helper](#directoryhelper)
+  - [Json Helper](#jsonhelper)
+  - [Sanitize Helper](#sanitizehelper)
+  - [Number Helper](#numberhelper)
 - [License](#license)
 
 ## Requirements
@@ -22,8 +27,9 @@ A collection of lightweight PHP helper classes with minimal external dependencie
 Some helpers require additional PHP extensions:
 
 - `ext-ctype` for `IsHelper`;
-- `ext-mbstring` for `StringHelper`;
+- `ext-mbstring` for `SanitizeHelper` and `StringHelper`;
 - `ext-sodium` for `EncryptionHelper`.
+- `ext-intl` for `SanitizeHelper`.
 
 ## Installation
 
@@ -228,6 +234,72 @@ Returns information about files in a directory, with optional recursion.
 Deletes directory contents recursively, with optional directory removal and protection of common web server files.
 
 See the [DirectoryHelper documentation](docs/DirectoryHelper.md).
+
+### JsonHelper
+
+`JsonHelper` provides lightweight helpers for encoding, decoding, and working with JSON data, including JSON Lines and JSON-LD formatted output.
+
+#### `decode()`
+
+Decodes a JSON string into an array, object, scalar value, or `null`.
+
+#### `jsonify()`
+
+Encodes an array as JSON and can optionally send the JSON content type HTTP header.
+
+#### `encodeForLdFormat()`
+
+Encodes data as pretty-printed JSON-LD wrapped in an HTML `application/ld+json` script element.
+
+#### `encodeAsJsonL()`
+
+Encodes a list of associative arrays using the JSON Lines format.
+
+#### `decodeFromJsonL()`
+
+Decodes JSON Lines content into a list of associative arrays.
+
+See the [JsonHelper documentation](docs/JsonHelper.md).
+
+### SanitizeHelper
+
+`SanitizeHelper` provides helpers for generating URL-friendly slugs, simplifying titles, and removing accents from strings.
+
+#### `slugify()`
+
+Converts text into a lowercase URL-friendly slug with support for custom character replacements.
+
+#### `urlTitle()`
+
+Creates a simplified URL-friendly title while preserving the original case.
+
+#### `removeAccents()`
+
+Removes or transliterates accented and special characters.
+
+See the [SanitizeHelper documentation](docs/SanitizeHelper.md).
+
+### NumberHelper
+
+`NumberHelper` provides lightweight helpers for number formatting, percentage calculations, integer code generation, and ceiling values.
+
+#### `format()`
+
+Formats numbers with configurable decimal and thousands separators.
+
+#### `percent()`
+
+Calculates percentages with configurable precision.
+
+#### `generateIntegerCode()`
+
+Generates cryptographically secure integer codes with a configurable number of digits.
+
+#### `ceiling()`
+
+Rounds numbers according to a configurable decimal placement.
+
+See the [NumberHelper documentation](docs/NumberHelper.md).
 
 ## License
 

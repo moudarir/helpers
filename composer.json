@@ -28,8 +28,9 @@
   },
   "suggest": {
     "ext-ctype": "Required by IsHelper",
-    "ext-mbstring": "Required by StringHelper",
-    "ext-sodium": "Required by EncryptionHelper"
+    "ext-mbstring": "Required by SanitizeHelper and StringHelper",
+    "ext-sodium": "Required by EncryptionHelper",
+    "ext-intl": "Required by SanitizeHelper"
   },
   "autoload": {
     "psr-4" : {

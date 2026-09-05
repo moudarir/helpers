@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-09-05
+
+### Added
+
+* Add `JsonHelper` for:
+  * JSON encoding and decoding;
+  * JSON-LD formatted output;
+  * JSON Lines encoding and decoding.
+* Add `SanitizeHelper` for:
+  * URL-friendly slug generation;
+  * URL title formatting;
+  * accent removal and character transliteration.
+* Add `NumberHelper` for:
+  * number formatting;
+  * percentage calculations;
+  * secure integer code generation;
+  * ceiling calculations.
+* Add documentation for `JsonHelper`, `SanitizeHelper`, and `NumberHelper`.
+* Add package badges to `README.md`.
+
+### Changed
+
+* Set `ext-intl` as a suggested extension for `SanitizeHelper`.
+* Keep helper-specific PHP extensions as Composer suggestions rather than package-wide requirements.
+* Update `README.md` with the newly added helpers.
+
 ## [1.2.0] - 2026-09-05
 
 ### Added

@@ -27,11 +27,10 @@ public static function binaryBytes(int $length): ?string
 
 Returns a binary string containing the requested number of random bytes.
 
-Returns `null` when `$length` is less than or equal to `0`.
+Returns `null` when :
 
-#### Exceptions
-
-Throws `Random\RandomException` when the random bytes cannot be generated.
+* `$length` is less than or equal to `0`;
+* the random bytes cannot be generated.
 
 #### Examples
 

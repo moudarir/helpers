@@ -10,16 +10,17 @@ use SodiumException;
 final class EncryptionHelper
 {
 
-    /**
-     * @throws RandomException
-     */
     public static function binaryBytes(int $length): ?string
     {
         if ($length <= 0) {
             return null;
         }
 
-        return random_bytes($length);
+        try {
+            return random_bytes($length);
+        } catch (RandomException) {
+            return null;
+        }
     }
 
     /**
