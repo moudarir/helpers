@@ -9,6 +9,8 @@
 * [`toInt()`](#toint)
 * [`toString()`](#tostring)
 * [`extractImgSrc()`](#extractimgsrc)
+* [`appendToPosition()`](#appendtoposition)
+* [`splitLines()`](#splitlines)
 
 ## `diff()`
 
@@ -399,4 +401,150 @@ When no image source is found:
 $sources = ArrayHelper::extractImgSrc('<p>Lorem ipsum</p>');
 
 // []
+```
+
+---
+
+## `appendToPosition()`
+
+```php
+public static function appendToPosition(
+    array $items,
+    mixed $data,
+    int $offset = 0
+): array
+```
+
+Adds a value to an array at the specified position.
+
+The original array is preserved and a new array is returned with the supplied value inserted at `$offset`.
+
+The `$offset` uses the same position semantics as `array_splice()`.
+
+### Parameters
+
+| Parameter | Type    | Default | Description                           |
+| --------- | ------- | ------- | ------------------------------------- |
+| `$items`  | `array` | —       | Array to modify                       |
+| `$data`   | `mixed` | —       | Value to insert                       |
+| `$offset` | `int`   | `0`     | Position at which to insert the value |
+
+### Return Value
+
+Returns the array with `$data` inserted at the specified position.
+
+### Examples
+
+Insert a value at the beginning of an array:
+
+```php
+$items = ['a', 'b', 'c'];
+
+$result = ArrayHelper::appendToPosition($items, 'aa');
+```
+
+Result:
+
+```php
+['aa', 'a', 'b', 'c']
+```
+
+Insert a value at a specific position:
+
+```php
+$result = ArrayHelper::appendToPosition(
+    ['a', 'b', 'c'],
+    'aa',
+    1
+);
+```
+
+Result:
+
+```php
+['a', 'aa', 'b', 'c']
+```
+
+The method can also insert any type of value into an array:
+
+```php
+$items = [
+    'a' => [],
+    'b' => [],
+    'c' => [],
+];
+
+$result = ArrayHelper::appendToPosition($items, [], 2);
+```
+
+Result:
+
+```php
+[
+    'a' => [],
+    'b' => [],
+    0 => [],
+    'c' => [],
+]
+```
+
+---
+
+## `splitLines()`
+
+```php
+public static function splitLines(string $content): array
+```
+
+Splits a string into an array of lines.
+
+Leading and trailing whitespace is removed from the complete content before it is split.
+
+The method supports Unix (`LF`), Windows (`CRLF`), and classic Mac (`CR`) line endings.
+
+Empty or whitespace-only content returns an empty array.
+
+### Parameters
+
+| Parameter  | Type     | Description                 |
+| ---------- | -------- | --------------------------- |
+| `$content` | `string` | Content to split into lines |
+
+### Return Value
+
+Returns an array containing the lines found in the supplied content.
+
+Returns an empty array when the content is empty or contains only whitespace.
+
+### Example
+
+```php
+$content = "lorem ipsum dolor\nHello World";
+
+$lines = ArrayHelper::splitLines($content);
+```
+
+Result:
+
+```php
+[
+    'lorem ipsum dolor',
+    'Hello World',
+]
+```
+
+Trailing line breaks are ignored:
+
+```php
+$content = "lorem ipsum dolor\n";
+
+$lines = ArrayHelper::splitLines($content);
+```
+
+Result:
+
+```php
+[
+    'lorem ipsum dolor'
+]
 ```

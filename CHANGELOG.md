@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2026-09-28
+
+### Added
+
+* Add new methods for `ArrayHelper`;
+* Add new methods for `StringHelper`.
+
+### Changed
+
+* Update `README.md` with the newly added methods;
+* Update documentation for `ArrayHelper` and `StringHelper`.
+
 ## [1.3.0] - 2026-09-05
 
 ### Added

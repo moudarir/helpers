@@ -134,4 +134,24 @@ final class ArrayHelper
 
         return $matches[1] ?? [];
     }
+
+    public static function appendToPosition(array $items, mixed $data, int $offset = 0): array
+    {
+        array_splice($items, $offset, 0, [$data]);
+
+        return $items;
+    }
+
+    public static function splitLines(string $content): array
+    {
+        $content = trim($content);
+
+        if ($content === '') {
+            return [];
+        }
+
+        $returns = preg_split('/\r\n|[\r\n]/', $content);
+
+        return $returns !== false ? $returns : [];
+    }
 }

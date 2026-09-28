@@ -124,4 +124,26 @@ final class StringHelper
 
         return mb_substr($string, 0, $contentLength) . $ellipsis;
     }
+
+    public static function removeChars(string $content): string
+    {
+        $content = trim($content);
+
+        if ($content === '') {
+            return '';
+        }
+
+        return preg_replace('/\D+/', '', $content);
+    }
+
+    public static function removeNumbers(string $content): string
+    {
+        $content = trim($content);
+
+        if ($content === '') {
+            return '';
+        }
+
+        return trim(preg_replace('/\d+/', '', $content));
+    }
 }

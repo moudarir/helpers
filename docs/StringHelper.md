@@ -2,6 +2,10 @@
 
 `StringHelper` provides lightweight utility methods for common string operations, including extracting first letters, converting strings to camelCase, formatting byte sizes, and generating text excerpts.
 
+## Requirements
+
+`StringHelper` requires the PHP `mbstring` extension for Unicode-aware string operations.
+
 ## Available Methods
 
 * [`firstLetter()`](#firstletter)
@@ -9,6 +13,8 @@
 * [`toCamelcase()`](#tocamelcase)
 * [`bytesToHuman()`](#bytestohuman)
 * [`excerpt()`](#excerpt)
+* [`removeChars()`](#removechars)
+* [`removeNumbers()`](#removenumbers)
 
 ## `firstLetter()`
 
@@ -319,6 +325,120 @@ StringHelper::excerpt(
 
 ---
 
-## Requirements
+## `removeChars()`
 
-`StringHelper` requires the PHP `mbstring` extension for Unicode-aware string operations.
+```php
+public static function removeChars(string $content): string
+```
+
+Removes all non-numeric characters from a string. The resulting string contains only decimal digits.
+
+Leading and trailing whitespace is removed before processing.
+
+### Parameters
+
+| Parameter  | Type     | Description                                         |
+| ---------- | -------- | --------------------------------------------------- |
+| `$content` | `string` | Content from which to remove non-numeric characters |
+
+### Return Value
+
+Returns a string containing only the digits found in the supplied content.
+
+Returns an empty string when the content is empty, contains only whitespace, or does not contain any digits.
+
+### Examples
+
+```php
+$content = 'sder12as';
+
+$result = StringHelper::removeChars($content);
+```
+
+Result:
+
+```text
+12
+```
+
+Characters contained in HTML markup are treated like any other non-numeric characters:
+
+```php
+$content = '<strong>sd3er12as</strong>';
+
+$result = StringHelper::removeChars($content);
+```
+
+Result:
+
+```text
+312
+```
+
+---
+
+## `removeNumbers()`
+
+```php
+public static function removeNumbers(string $content): string
+```
+
+Removes all numeric characters from a string.
+
+After removing the digits, leading and trailing whitespace is removed from the resulting string.
+
+HTML tags and other non-numeric characters are preserved.
+
+### Parameters
+
+| Parameter  | Type     | Description                          |
+| ---------- | -------- | ------------------------------------ |
+| `$content` | `string` | Content from which to remove numbers |
+
+### Return Value
+
+Returns the supplied content with all decimal digits removed.
+
+Returns an empty string when the content contains only numbers or whitespace.
+
+### Examples
+
+```php
+$content = 'sder12as';
+
+$result = StringHelper::removeNumbers($content);
+```
+
+Result:
+
+```text
+sderas
+```
+
+Numbers can be removed while preserving the surrounding text:
+
+```php
+$content = 'sd3er12as';
+
+$result = StringHelper::removeNumbers($content);
+```
+
+Result:
+
+```text
+sderas
+```
+
+HTML markup is preserved:
+
+```php
+$content = '<strong>sd3er12as</strong>';
+
+$result = StringHelper::removeNumbers($content);
+```
+
+Result:
+
+```text
+<strong>sderas</strong>
+```

@@ -341,4 +341,69 @@ final class StringHelperTest extends TestCase
     {
         self::assertSame('', StringHelper::excerpt('<p><strong></strong></p>'));
     }
+
+    #[Test]
+    public function removeChars_returnsEmptyString(): void
+    {
+        self::assertSame(
+            [
+                '',
+                '',
+                '',
+                '',
+            ],
+            [
+                StringHelper::removeChars(''),
+                StringHelper::removeChars(' '),
+                StringHelper::removeChars('ASDE'),
+                StringHelper::removeChars('<p><strong></strong></p>'),
+            ]
+        );
+    }
+
+    #[Test]
+    public function removeChars_returnsStringWithOnlyNumbers(): void
+    {
+        self::assertSame(
+            [
+                '12',
+                '12',
+                '12',
+                '312',
+                '312',
+            ],
+            [
+                StringHelper::removeChars('sder12as'),
+                StringHelper::removeChars('12as'),
+                StringHelper::removeChars('sder12'),
+                StringHelper::removeChars('sd3er12as'),
+                StringHelper::removeChars('<strong>sd3er12as</strong>'),
+            ]
+        );
+    }
+
+    #[Test]
+    public function removeNumbers_returnsStringWithoutNumbers(): void
+    {
+        self::assertSame(
+            [
+                'sderas',
+                'as',
+                'sder',
+                'sderas',
+                '<strong>sderas</strong>',
+                '',
+                '',
+            ],
+            [
+                StringHelper::removeNumbers('sder12as'),
+                StringHelper::removeNumbers('12as'),
+                StringHelper::removeNumbers('sder12'),
+                StringHelper::removeNumbers('sd3er12as'),
+                StringHelper::removeNumbers('<strong>sd3er12as</strong>'),
+                StringHelper::removeNumbers('123'),
+                StringHelper::removeNumbers(' 123 '),
+            ]
+        );
+    }
 }

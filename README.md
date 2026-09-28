@@ -75,6 +75,18 @@ Extracts the `src` attributes from `<img>` elements contained in an HTML string.
 
 The method supports both single and double quotes and performs a case-insensitive search.
 
+#### `appendToPosition()`
+
+Adds a value to an array at the specified position.
+
+The original array is preserved and a new array is returned with the supplied value inserted at `$offset`.
+
+#### `splitLines()`
+
+Splits a string into an array of lines.
+
+Leading and trailing whitespace is removed from the complete content before it is split.
+
 See the [ArrayHelper documentation](docs/ArrayHelper.md).
 
 ### StringHelper
@@ -100,6 +112,16 @@ Converts a byte value into a human-readable representation using either binary (
 #### `excerpt()`
 
 Creates a shortened text excerpt while removing HTML tags and supporting configurable ellipsis placement.
+
+#### `removeChars()`
+
+Removes all non-numeric characters from a string. The resulting string contains only decimal digits.
+
+#### `removeNumbers()`
+
+Removes all numeric characters from a string.
+
+After removing the digits, leading and trailing whitespace is removed from the resulting string.
 
 See the [StringHelper documentation](docs/StringHelper.md).
 

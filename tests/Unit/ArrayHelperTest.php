@@ -574,18 +574,54 @@ final class ArrayHelperTest extends TestCase
     #[Test]
     public function extractImgSrc_returnsAnEmptyArrayWhenNoImageIsFound(): void
     {
-        self::assertSame(
-            [],
-            ArrayHelper::extractImgSrc('<p>No image here</p>')
-        );
+        self::assertSame([], ArrayHelper::extractImgSrc('<p>No image here</p>'));
     }
 
     #[Test]
     public function extractImgSrc_returnsAnEmptyArrayForEmptyContent(): void
     {
+        self::assertSame([], ArrayHelper::extractImgSrc(''));
+    }
+
+    #[Test]
+    public function appendToPosition_returnsAnArrayWithAddedDataToExactPosition(): void
+    {
+        $items = ['a', 'b', 'c'];
+        $keyValue = ['a' => [], 'b' => [], 'c' => []];
+
         self::assertSame(
-            [],
-            ArrayHelper::extractImgSrc('')
+            ['aa', 'a', 'b', 'c'],
+            ArrayHelper::appendToPosition($items, 'aa')
+        );
+        self::assertSame(
+            ['a', 'aa', 'b', 'c'],
+            ArrayHelper::appendToPosition($items, 'aa', 1)
+        );
+
+        self::assertSame(
+            [0 => [], 'a' => [], 'b' => [], 'c' => []],
+            ArrayHelper::appendToPosition($keyValue, [])
+        );
+        self::assertSame(
+            ['a' => [], 'b' => [], 0 => [], 'c' => []],
+            ArrayHelper::appendToPosition($keyValue, [], 2)
+        );
+    }
+
+    #[Test]
+    public function splitLines_returnsAnArrayFromContent(): void
+    {
+        $empty = "\n \n\r";
+        $line = "lorem ipsum dolor\n";
+        $twoLines = "lorem ipsum dolor\nHello World";
+
+        self::assertSame([], ArrayHelper::splitLines($empty));
+
+        self::assertSame(['lorem ipsum dolor'], ArrayHelper::splitLines($line));
+
+        self::assertSame(
+            ['lorem ipsum dolor', 'Hello World'],
+            ArrayHelper::splitLines($twoLines)
         );
     }
 }
