@@ -18,6 +18,7 @@ A collection of lightweight PHP helper classes with minimal external dependencie
   - [Json Helper](#jsonhelper)
   - [Sanitize Helper](#sanitizehelper)
   - [Number Helper](#numberhelper)
+  - [Datetime Helper](#datetimehelper)
 - [License](#license)
 
 ## Requirements
@@ -322,6 +323,50 @@ Generates cryptographically secure integer codes with a configurable number of d
 Rounds numbers according to a configurable decimal placement.
 
 See the [NumberHelper documentation](docs/NumberHelper.md).
+
+### DatetimeHelper
+
+`DatetimeHelper` extends PHP's native `DateTimeImmutable` and provides utilities for date parsing, timezone configuration, localized formatting, relative date representations, and duration calculations.
+
+#### `now()`
+
+Creates a date instance representing the current date and time in the configured timezone.
+
+#### `parseFromFormat()`
+
+Creates a date instance from a Unix timestamp or a date string.
+
+#### `changeTimeZone()`
+
+Changes the default timezone used by the helper.
+
+#### `setLocale()`
+
+Configures the locale used for localized date formatting.
+
+#### `setLanguageTexts()`
+
+Customizes the labels and templates used for human-readable durations and relative dates, with recursive validation of supplied values.
+
+#### `isoFormat()`
+
+Formats dates using predefined aliases or custom ICU patterns.
+
+#### `ago()`
+
+Returns a human-readable representation of a date difference, supporting past and future dates and multiple units.
+
+#### `elapsedTime()`
+
+Converts a duration expressed in seconds into a human-readable representation.
+
+#### `secondsFromIsoDuration()`
+
+Converts supported ISO 8601 durations into seconds.
+
+See the [DatetimeHelper documentation](docs/DatetimeHelper.md).
+
+**Requirements:** PHP 8.4 or higher. The `ext-intl` extension is required for `isoFormat()`.
 
 ## License
 

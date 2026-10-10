@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-10-10
+
+### Added
+
+* Add `DatetimeHelper`, extending PHP's native `DateTimeImmutable`, for:
+  * date creation and parsing from timestamps and date strings;
+  * timezone and locale configuration;
+  * localized formatting with ICU patterns;
+  * human-readable relative date differences;
+  * elapsed duration formatting;
+  * conversion of supported ISO 8601 durations to seconds;
+  * convenient read-only date and time properties;
+  * immutable date modifications and serialization.
+* Add `DatetimeConfig` for default timezone, locale, format patterns,
+  duration units, and localized text.
+* Add five Traits to organize `DatetimeHelper` responsibilities:
+  * `DatetimeMagicMethodsTrait`;
+  * `DatetimeConfigurationTrait`;
+  * `DatetimeModificationTrait`;
+  * `DatetimeFormattingTrait`;
+  * `DatetimeCalculationTrait`.
+* Add unit tests for `DatetimeHelper`.
+* Add documentation for `DatetimeHelper` and update `README.md`.
+
 ## [1.3.1] - 2026-09-28
 
 ### Added

@@ -30,7 +30,7 @@
     "ext-ctype": "Required by IsHelper",
     "ext-mbstring": "Required by SanitizeHelper and StringHelper",
     "ext-sodium": "Required by EncryptionHelper",
-    "ext-intl": "Required by SanitizeHelper"
+    "ext-intl": "Required by SanitizeHelper and DatetimeHelper"
   },
   "autoload": {
     "psr-4" : {
