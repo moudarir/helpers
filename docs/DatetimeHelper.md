@@ -221,45 +221,54 @@ The method supports partial, recursive replacements. Only the supplied keys are 
 
 Passing `null` or an empty array leaves the corresponding configuration unchanged.
 
+Unit labels must be ICU MessageFormat pattern strings. ICU selects the appropriate plural form according to the configured locale.
+
 Unknown keys and incompatible value types throw `InvalidArgumentException`. All supplied configurations are validated before any changes are applied.
 
 ### Parameters
 
-| Parameter     | Type     | Description                                          |
-|---------------|----------|------------------------------------------------------|
-| `$unitsShort` | `?array` | Short labels for duration units                      |
-| `$unitsLong`  | `?array` | Full labels for duration units                       |
-| `$zeroText`   | `?array` | Text returned for zero or negative elapsed durations |
-| `$agoTexts`   | `?array` | Labels and templates used by `ago()`                 |
+| Parameter     | Type     | Description                                         |
+|---------------|----------|-----------------------------------------------------|
+| `$unitsShort` | `?array` | ICU patterns for short duration units               |
+| `$unitsLong`  | `?array` | ICU patterns for full duration units                |
+| `$zeroText`   | `?array` | ICU patterns for zero or negative elapsed durations |
+| `$agoTexts`   | `?array` | Labels and templates used by `ago()`                |
 
 ### Configuration Structures
 
-`unitsShort` and `unitsLong` use integer keys representing the number of milliseconds in a unit. Each value contains a singular and plural label.
+`unitsShort` and `unitsLong` use integer keys representing the number of milliseconds in a unit. Each value is an ICU MessageFormat pattern string.
 
-`zeroText` supports the `short` and `long` keys.
+`zeroText` supports the `short` and `long` keys. Each value is an ICU MessageFormat pattern string.
 
-`agoTexts` supports the `past`, `future`, and `now` templates, along with the singular and plural labels for years, months, weeks, days, hours, minutes, and seconds.
+`agoTexts` supports the `past`, `future`, and `now` keys, along with the `units` array. The latter contains ICU patterns for years, months, weeks, days, hours, minutes, and seconds.
+
+ICU plural patterns support locale-dependent categories such as `zero`, `one`, `two`, `few`, `many`, and `other`. The available categories and their selection rules depend on the configured locale. Exact-value selectors, such as `=0`, can also be used.
+
+The `count` argument supplies the numeric value used to select the plural category. The `#` symbol represents the formatted number. The `number` argument can be used when the original numeric text should be preserved.
 
 ### Example
 
-Change the short minute labels and the plural form of the word used by `ago()`:
+Change the short minute label and the minute pattern used by `ago()`:
 
 ```php
 DatetimeHelper::setLanguageTexts(
     unitsShort: [
-        60_000 => [
-            0 => 'mn',
-            1 => 'mns',
-        ],
+        60_000 => '{count, plural, other {# min}}',
     ],
     agoTexts: [
         'units' => [
-            'minute' => [
-                1 => 'mins',
-            ],
+            'minute' => '{count, plural, one {# minute} ' . 'other {# minutes}}',
         ],
     ]
 );
+```
+
+For Arabic, different plural categories can be defined in the same pattern:
+
+```php
+'{count, plural, =0 {0 ثانية} one {ثانية واحدة} '
+    . 'two {ثانيتان} few {# ثوانٍ} '
+    . 'many {# ثانية} other {# ثانية}}'
 ```
 
 Nested values that are not specified remain unchanged.
@@ -932,8 +941,8 @@ Customize the zero representation:
 ```php
 DatetimeHelper::setLanguageTexts(
     zeroText: [
-        'short' => '0 ms',
-        'long' => '0 milliseconde',
+        'short' => '{count, plural, =0 {0 ms} other {# ms}}',
+        'long' => '{count, plural, =0 {0 milliseconde} ' . 'one {# milliseconde} other {# millisecondes}}',
     ]
 );
 ```

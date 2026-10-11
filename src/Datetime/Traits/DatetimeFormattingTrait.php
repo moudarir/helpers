@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moudarir\Helpers\Datetime\Traits;
 
 use IntlDateFormatter;
+use MessageFormatter;
+use RuntimeException;
 use Throwable;
 
 trait DatetimeFormattingTrait
@@ -67,5 +69,43 @@ trait DatetimeFormattingTrait
             IntlDateFormatter::GREGORIAN,
             $pattern
         );
+    }
+
+    /**
+     * Formats a number and selects its ICU plural category.
+     */
+    private static function formatPluralText(int $count, string $pattern): string
+    {
+        try {
+            if (class_exists(MessageFormatter::class) === false) {
+                throw new RuntimeException('ICU plural formatting requires the intl extension.');
+            }
+
+            $key = static::$defaultLocale . '|' . $pattern;
+
+            $formatter = static::$messageFormatterCache[$key]
+                ??= MessageFormatter::create(static::$defaultLocale, $pattern);
+
+            if ($formatter === null) {
+                throw new RuntimeException(
+                    'Invalid ICU message pattern for locale "' . static::$defaultLocale . '".'
+                );
+            }
+
+            $message = $formatter->format([
+                'count' => $count,
+                'number' => (string) $count,
+            ]);
+
+            if ($message === false) {
+                throw new RuntimeException('Unable to format ICU message: ' . $formatter->getErrorMessage());
+            }
+
+            return $message;
+        } catch (Throwable $exception) {
+            static::reportException($exception);
+
+            return '';
+        }
     }
 }

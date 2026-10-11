@@ -8,6 +8,7 @@ use DateInvalidTimeZoneException;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
+use MessageFormatter;
 use Moudarir\Helpers\Datetime\DatetimeConfig;
 use Moudarir\Helpers\Datetime\DatetimeHelper;
 use PHPUnit\Framework\Attributes\Test;
@@ -280,15 +281,11 @@ final class DatetimeHelperTest extends TestCase
     {
         DatetimeHelper::setLanguageTexts(
             unitsShort: [
-                60_000 => [
-                    0 => 'mn',
-                ],
+                60_000 => '{count, plural, other {# mn}}',
             ],
             agoTexts: [
                 'units' => [
-                    'minute' => [
-                        1 => 'mins',
-                    ],
+                    'minute' => '{count, plural, one {# min} ' . 'other {# mins}}',
                 ],
             ]
         );
@@ -314,10 +311,7 @@ final class DatetimeHelperTest extends TestCase
     {
         DatetimeHelper::setLanguageTexts(
             unitsShort: [
-                60_000 => [
-                    0 => 'mn',
-                    1 => 'mns',
-                ],
+                60_000 => '{count, plural, other {# mn}}',
             ]
         );
 
@@ -349,9 +343,7 @@ final class DatetimeHelperTest extends TestCase
         DatetimeHelper::setLanguageTexts(
             agoTexts: [
                 'units' => [
-                    'minute' => [
-                        'plural' => 'mins',
-                    ],
+                    'minut' => '{count, plural, other {# min}}',
                 ],
             ]
         );
@@ -377,9 +369,7 @@ final class DatetimeHelperTest extends TestCase
         try {
             DatetimeHelper::setLanguageTexts(
                 unitsShort: [
-                    60_000 => [
-                        0 => 'mn',
-                    ],
+                    60_000 => '{count, plural, other {# mn}}',
                 ],
                 agoTexts: [
                     'unknown' => 'invalid',
@@ -521,5 +511,49 @@ final class DatetimeHelperTest extends TestCase
         $this->assertSame(0, DatetimeHelper::secondsFromIsoDuration(''));
 
         $this->assertSame(0, DatetimeHelper::secondsFromIsoDuration('not-a-duration'));
+    }
+
+    #[Test]
+    public function ago_usesIcuArabicPluralRules(): void
+    {
+        DatetimeHelper::setLocale('ar');
+
+        $pattern = '{count, plural, =0 {0 ثانية} '
+            . 'one {ثانية واحدة} two {ثانيتان} '
+            . 'few {{number} ثوانٍ} many {{number} ثانية} '
+            . 'other {{number} ثانية}}';
+
+        DatetimeHelper::setLanguageTexts(
+            agoTexts: [
+                'units' => [
+                    'second' => $pattern,
+                ],
+            ]
+        );
+
+        $date = new DatetimeHelper('2024-01-02 12:00:00', new DateTimeZone('UTC'));
+
+        $cases = [
+            [0, '0 ثانية'],
+            [1, 'ثانية واحدة'],
+            [2, 'ثانيتان'],
+            [3, '3 ثوانٍ'],
+            [11, '11 ثانية'],
+        ];
+
+        foreach ($cases as [$seconds, $expected]) {
+            $target = $date->modify("+{$seconds} seconds");
+
+            $this->assertSame($expected, $date->ago($target, 1, true));
+        }
+
+        $this->assertSame(
+            '321 ثانية',
+            MessageFormatter::formatMessage(
+                'ar',
+                $pattern,
+                ['count' => 321, 'number' => '321']
+            )
+        );
     }
 }

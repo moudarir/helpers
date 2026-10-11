@@ -35,29 +35,30 @@ trait DatetimeConfigurationTrait
     {
         static::$defaultLocale = $locale;
         static::$formatterCache = [];
+        static::$messageFormatterCache = [];
     }
 
     /**
      * Applies partial, recursively validated language text replacements.
      *
-     * Unknown keys and incompatible value types are rejected.
+     * Unit values are ICU MessageFormat patterns.
      * All replacements are validated before any configuration is changed.
      *
-     * @param array<int, array{0?: string, 1?: string}>|null $unitsShort
-     * @param array<int, array{0?: string, 1?: string}>|null $unitsLong
+     * @param array<int, string>|null $unitsShort
+     * @param array<int, string>|null $unitsLong
      * @param array{short?: string, long?: string}|null $zeroText
      * @param array{
      *     past?: string,
      *     future?: string,
      *     now?: string,
      *     units?: array{
-     *         year?: array{0?: string, 1?: string},
-     *         month?: array{0?: string, 1?: string},
-     *         week?: array{0?: string, 1?: string},
-     *         day?: array{0?: string, 1?: string},
-     *         hour?: array{0?: string, 1?: string},
-     *         minute?: array{0?: string, 1?: string},
-     *         second?: array{0?: string, 1?: string}
+     *         year?: string,
+     *         month?: string,
+     *         week?: string,
+     *         day?: string,
+     *         hour?: string,
+     *         minute?: string,
+     *         second?: string
      *     }
      * }|null $agoTexts
      *
@@ -120,6 +121,15 @@ trait DatetimeConfigurationTrait
 
         if ($agoTexts !== null && $agoTexts !== []) {
             static::$agoTexts = $nextAgoTexts;
+        }
+
+        $textsChanged = ($unitsShort !== null && $unitsShort !== [])
+            || ($unitsLong !== null && $unitsLong !== [])
+            || ($zeroText !== null && $zeroText !== [])
+            || ($agoTexts !== null && $agoTexts !== []);
+
+        if ($textsChanged === true) {
+            static::$messageFormatterCache = [];
         }
     }
 

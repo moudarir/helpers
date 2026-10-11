@@ -7,6 +7,7 @@ namespace Moudarir\Helpers\Datetime;
 use DateTimeImmutable;
 use DateTimeZone;
 use IntlDateFormatter;
+use MessageFormatter;
 use Moudarir\Helpers\Datetime\Traits\DatetimeCalculationTrait;
 use Moudarir\Helpers\Datetime\Traits\DatetimeFormattingTrait;
 use Moudarir\Helpers\Datetime\Traits\DatetimeModificationTrait;
@@ -43,6 +44,11 @@ class DatetimeHelper extends DateTimeImmutable
      * @var array<string, IntlDateFormatter>
      */
     protected static array $formatterCache = [];
+
+    /**
+     * @var array<string, MessageFormatter>
+     */
+    protected static array $messageFormatterCache = [];
 
     public static function now(): static
     {

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-10-11
+
+### Changed
+
+* Replace singular/plural unit arrays with ICU MessageFormat patterns.
+* Apply locale-aware plural rules in `ago()` and `elapsedTime()`.
+* Update `setLanguageTexts()` documentation and examples.
+
+### Added
+
+* Add Arabic pluralization test coverage.
+
 ## [1.4.0] - 2026-10-10
 
 ### Added

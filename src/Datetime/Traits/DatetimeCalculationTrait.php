@@ -86,10 +86,14 @@ trait DatetimeCalculationTrait
             $formattedParts = [];
 
             foreach ($selectedUnits as [$value, $unitKey]) {
-                $units = static::$agoTexts['units'][$unitKey];
-                $label = $value === 1 ? $units[0] : $units[1];
+                $pattern = static::$agoTexts['units'][$unitKey];
+                $formatted = static::formatPluralText($value, $pattern);
 
-                $formattedParts[] = "$value $label";
+                if ($formatted === '') {
+                    return '';
+                }
+
+                $formattedParts[] = $formatted;
             }
 
             $formattedText = implode(' ', $formattedParts);
@@ -117,7 +121,9 @@ trait DatetimeCalculationTrait
         $totalMs = (int) round($time * 1000);
 
         if ($totalMs <= 0) {
-            return $short ? static::$zeroText['short'] : static::$zeroText['long'];
+            $pattern = $short ? static::$zeroText['short'] : static::$zeroText['long'];
+
+            return static::formatPluralText(0, $pattern);
         }
 
         $parts = max($parts, 1);
@@ -126,7 +132,7 @@ trait DatetimeCalculationTrait
         $output = [];
         $count = 0;
 
-        foreach ($units as $msInUnit => [$singular, $plural]) {
+        foreach ($units as $msInUnit => $pattern) {
             if ($totalMs < $msInUnit) {
                 continue;
             }
@@ -134,7 +140,13 @@ trait DatetimeCalculationTrait
             $value = intdiv($totalMs, $msInUnit);
             $totalMs %= $msInUnit;
 
-            $output[] = $value . ' ' . ($value > 1 ? $plural : $singular);
+            $formatted = static::formatPluralText($value, $pattern);
+
+            if ($formatted === '') {
+                return '';
+            }
+
+            $output[] = $formatted;
 
             ++$count;
 
