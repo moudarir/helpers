@@ -2,6 +2,16 @@
 
 `DatetimeHelper` extends PHP's native `DateTimeImmutable` class and provides additional utilities for date parsing, timezone configuration, localized formatting, date differences, and duration calculations.
 
+Features include:
+
+- Date creation, parsing, and immutable modification.
+- Timezone and locale configuration.
+- Localized date formatting through ICU.
+- Relative date descriptions with locale-aware plural rules.
+- Elapsed duration formatting.
+- Language files for French, English, and Arabic.
+- Automatic language selection based on the configured locale, with French as the fallback language.
+
 It uses PHP's native date and time functionality without requiring Carbon.
 
 ## Available Methods
@@ -11,7 +21,6 @@ It uses PHP's native date and time functionality without requiring Carbon.
 - [`timeZone()`](#timezone)
 - [`changeTimeZone()`](#changetimezone)
 - [`setLocale()`](#setlocale)
-- [`setLanguageTexts()`](#setlanguagetexts)
 
 ### Date Creation and Parsing
 
@@ -178,104 +187,80 @@ The newly created instance uses `Europe/Paris`.
 public static function setLocale(string $locale): void
 ```
 
-Sets the default locale used by `isoFormat()`.
+Sets the locale used for date formatting and selects the language file used by `DatetimeHelper`.
 
-The formatter cache is cleared so subsequent formatting operations use the new locale.
+The language file is selected using the language code extracted from the locale. Regional variants of the same language share the same language file.
 
-The default locale is `fr_FR`.
+If no matching language file exists, the French language file is used.
+
+Changing the locale resets the loaded language configuration and the formatter caches.
 
 ### Parameters
 
-| Parameter | Type     | Description                                   |
-|-----------|----------|-----------------------------------------------|
-| `$locale` | `string` | Locale identifier, such as `fr_FR` or `en_US` |
+| Parameter | Type     | Description                                             |
+|-----------|----------|---------------------------------------------------------|
+| `$locale` | `string` | Locale identifier, such as `fr_FR`, `en_US`, or `ar_MA` |
 
 ### Example
 
 ```php
-DatetimeHelper::setLocale('en_US');
+DatetimeHelper::setLocale('ar_MA');
 
-$date = DatetimeHelper::now();
+$date = new DatetimeHelper('2026-10-12 12:00:00');
 
-echo $date->isoFormat('LLLL');
+echo $date->isoFormat('L');
+echo $date->ago();
 ```
 
-The resulting text uses the English locale.
+In this example, the Arabic language file is used for localized text, while `ar_MA` remains the locale used for date formatting.
 
----
+## Language Files
 
-## `setLanguageTexts()`
+Language files provide the localized text and ICU MessageFormat patterns used by `DatetimeHelper`.
 
-```php
-public static function setLanguageTexts(
-    ?array $unitsShort = null,
-    ?array $unitsLong = null,
-    ?array $zeroText = null,
-    ?array $agoTexts = null
-): void
-```
+The files are stored in `src/Datetime/Lang/`:
 
-Updates the localized text configuration used by `elapsedTime()` and `ago()`.
+| File     | Language |
+|----------|----------|
+| `fr.php` | French   |
+| `en.php` | English  |
+| `ar.php` | Arabic   |
 
-The method supports partial, recursive replacements. Only the supplied keys are modified; unspecified keys retain their existing values.
+Each file returns an array containing the following keys:
 
-Passing `null` or an empty array leaves the corresponding configuration unchanged.
+| Key            | Description                                        |
+|----------------|----------------------------------------------------|
+| `isoFormatMap` | ICU date patterns for the supported format aliases |
+| `unitsShort`   | Patterns for short elapsed duration units          |
+| `unitsLong`    | Patterns for full elapsed duration units           |
+| `zeroText`     | Patterns used for zero or negative durations       |
+| `agoTexts`     | Text templates and unit patterns used by `ago()`   |
 
-Unit labels must be ICU MessageFormat pattern strings. ICU selects the appropriate plural form according to the configured locale.
+### Language Selection
 
-Unknown keys and incompatible value types throw `InvalidArgumentException`. All supplied configurations are validated before any changes are applied.
+The language file is selected from the language portion of the configured locale.
 
-### Parameters
+For example:
 
-| Parameter     | Type     | Description                                         |
-|---------------|----------|-----------------------------------------------------|
-| `$unitsShort` | `?array` | ICU patterns for short duration units               |
-| `$unitsLong`  | `?array` | ICU patterns for full duration units                |
-| `$zeroText`   | `?array` | ICU patterns for zero or negative elapsed durations |
-| `$agoTexts`   | `?array` | Labels and templates used by `ago()`                |
+| Locale  | Language file                        |
+|---------|--------------------------------------|
+| `fr`    | `fr.php`                             |
+| `fr_FR` | `fr.php`                             |
+| `en_US` | `en.php`                             |
+| `ar_MA` | `ar.php`                             |
+| `br`    | `fr.php`, if `br.php` is unavailable |
 
-### Configuration Structures
+The region portion of the locale remains available to ICU date formatting. The language file provides the corresponding text and predefined date format patterns.
 
-`unitsShort` and `unitsLong` use integer keys representing the number of milliseconds in a unit. Each value is an ICU MessageFormat pattern string.
+Language files are loaded lazily and cached. Calling `setLocale()` invalidates the loaded language configuration and both formatter caches, so subsequent calls use the new locale and language file.
 
-`zeroText` supports the `short` and `long` keys. Each value is an ICU MessageFormat pattern string.
+### ICU Requirements
 
-`agoTexts` supports the `past`, `future`, and `now` keys, along with the `units` array. The latter contains ICU patterns for years, months, weeks, days, hours, minutes, and seconds.
+The `intl` PHP extension is required for ICU-based date formatting and plural formatting.
 
-ICU plural patterns support locale-dependent categories such as `zero`, `one`, `two`, `few`, `many`, and `other`. The available categories and their selection rules depend on the configured locale. Exact-value selectors, such as `=0`, can also be used.
+Plural patterns select the appropriate grammatical form according to the configured locale. For example, Arabic uses plural categories including `zero`, `one`, `two`, `few`, `many`, and `other`.
 
-The `count` argument supplies the numeric value used to select the plural category. The `#` symbol represents the formatted number. The `number` argument can be used when the original numeric text should be preserved.
-
-### Example
-
-Change the short minute label and the minute pattern used by `ago()`:
-
-```php
-DatetimeHelper::setLanguageTexts(
-    unitsShort: [
-        60_000 => '{count, plural, other {# min}}',
-    ],
-    agoTexts: [
-        'units' => [
-            'minute' => '{count, plural, one {# minute} ' . 'other {# minutes}}',
-        ],
-    ]
-);
-```
-
-For Arabic, different plural categories can be defined in the same pattern:
-
-```php
-'{count, plural, =0 {0 ثانية} one {ثانية واحدة} '
-    . 'two {ثانيتان} few {# ثوانٍ} '
-    . 'many {# ثانية} other {# ثانية}}'
-```
-
-Nested values that are not specified remain unchanged.
-
-### Exceptions
-
-Throws `InvalidArgumentException` when an unknown key is supplied or a value does not match the expected structure.
+The language files contain these patterns, so applications do not need to define their own pluralization rules.
 
 ---
 
@@ -876,8 +861,6 @@ Result:
 2 heures 15 minutes
 ```
 
-The labels and templates can be customized using `setLanguageTexts()`.
-
 ---
 
 ## `elapsedTime()`
@@ -934,17 +917,6 @@ Result:
 
 ```text
 1 minute 5 secondes
-```
-
-Customize the zero representation:
-
-```php
-DatetimeHelper::setLanguageTexts(
-    zeroText: [
-        'short' => '{count, plural, =0 {0 ms} other {# ms}}',
-        'long' => '{count, plural, =0 {0 milliseconde} ' . 'one {# milliseconde} other {# millisecondes}}',
-    ]
-);
 ```
 
 ---

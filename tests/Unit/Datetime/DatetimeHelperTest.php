@@ -7,9 +7,7 @@ namespace Moudarir\Helpers\Tests\Unit\Datetime;
 use DateInvalidTimeZoneException;
 use DateTimeImmutable;
 use DateTimeZone;
-use InvalidArgumentException;
 use MessageFormatter;
-use Moudarir\Helpers\Datetime\DatetimeConfig;
 use Moudarir\Helpers\Datetime\DatetimeHelper;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -22,13 +20,6 @@ final class DatetimeHelperTest extends TestCase
 
         DatetimeHelper::changeTimeZone('UTC');
         DatetimeHelper::setLocale('fr_FR');
-
-        DatetimeHelper::setLanguageTexts(
-            unitsShort: DatetimeConfig::SHORT_UNITS,
-            unitsLong: DatetimeConfig::LONG_UNITS,
-            zeroText: DatetimeConfig::ZERO_TEXTS,
-            agoTexts: DatetimeConfig::AGO_TEXTS
-        );
     }
 
     #[Test]
@@ -277,113 +268,6 @@ final class DatetimeHelperTest extends TestCase
     }
 
     #[Test]
-    public function setLanguageTexts_recursivelyMergesNestedValues(): void
-    {
-        DatetimeHelper::setLanguageTexts(
-            unitsShort: [
-                60_000 => '{count, plural, other {# mn}}',
-            ],
-            agoTexts: [
-                'units' => [
-                    'minute' => '{count, plural, one {# min} ' . 'other {# mins}}',
-                ],
-            ]
-        );
-
-        $date = new DatetimeHelper('2024-01-02 10:00:00', new DateTimeZone('UTC'));
-
-        $target = new DateTimeImmutable('2024-01-02 10:02:00', new DateTimeZone('UTC'));
-
-        $this->assertSame('1 mn', DatetimeHelper::elapsedTime(60));
-        $this->assertSame('2 mins', $date->ago($target, 1, true));
-        $this->assertSame(
-            '1 heure',
-            $date->ago(
-                new DateTimeImmutable('2024-01-02 11:00:00', new DateTimeZone('UTC')),
-                1,
-                true
-            )
-        );
-    }
-
-    #[Test]
-    public function setLanguageTexts_ignoresNullAndEmptyArrays(): void
-    {
-        DatetimeHelper::setLanguageTexts(
-            unitsShort: [
-                60_000 => '{count, plural, other {# mn}}',
-            ]
-        );
-
-        DatetimeHelper::setLanguageTexts(
-            unitsShort: [],
-            zeroText: [],
-        );
-
-        $this->assertSame('1 mn', DatetimeHelper::elapsedTime(60));
-    }
-
-    #[Test]
-    public function setLanguageTexts_rejectsUnknownTopLevelKeys(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        DatetimeHelper::setLanguageTexts(
-            zeroText: [
-                'shorta' => '0 ms',
-            ]
-        );
-    }
-
-    #[Test]
-    public function setLanguageTexts_rejectsUnknownNestedKeys(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        DatetimeHelper::setLanguageTexts(
-            agoTexts: [
-                'units' => [
-                    'minut' => '{count, plural, other {# min}}',
-                ],
-            ]
-        );
-    }
-
-    #[Test]
-    public function setLanguageTexts_rejectsIncompatibleValueTypes(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        DatetimeHelper::setLanguageTexts(
-            zeroText: [
-                'short' => ['0 ms'],
-            ]
-        );
-    }
-
-    #[Test]
-    public function setLanguageTexts_doesNotPartiallyApplyInvalidChanges(): void
-    {
-        $exceptionThrown = false;
-
-        try {
-            DatetimeHelper::setLanguageTexts(
-                unitsShort: [
-                    60_000 => '{count, plural, other {# mn}}',
-                ],
-                agoTexts: [
-                    'unknown' => 'invalid',
-                ]
-            );
-        } catch (InvalidArgumentException) {
-            $exceptionThrown = true;
-        }
-
-        $this->assertTrue($exceptionThrown);
-        $this->assertSame('1 min', DatetimeHelper::elapsedTime(60));
-    }
-
-    #[Test]
     public function isNowOrFuture_returnsExpectedResult(): void
     {
         $past = new DatetimeHelper('2000-01-01 00:00:00', new DateTimeZone('UTC'));
@@ -518,25 +402,12 @@ final class DatetimeHelperTest extends TestCase
     {
         DatetimeHelper::setLocale('ar');
 
-        $pattern = '{count, plural, =0 {0 ثانية} '
-            . 'one {ثانية واحدة} two {ثانيتان} '
-            . 'few {{number} ثوانٍ} many {{number} ثانية} '
-            . 'other {{number} ثانية}}';
-
-        DatetimeHelper::setLanguageTexts(
-            agoTexts: [
-                'units' => [
-                    'second' => $pattern,
-                ],
-            ]
-        );
-
         $date = new DatetimeHelper('2024-01-02 12:00:00', new DateTimeZone('UTC'));
 
         $cases = [
             [0, '0 ثانية'],
             [1, 'ثانية واحدة'],
-            [2, 'ثانيتان'],
+            [2, 'ثانيتين'],
             [3, '3 ثوانٍ'],
             [11, '11 ثانية'],
         ];
@@ -547,6 +418,12 @@ final class DatetimeHelperTest extends TestCase
             $this->assertSame($expected, $date->ago($target, 1, true));
         }
 
+        $this->assertSame('3 ثوانٍ', DatetimeHelper::elapsedTime(3, 1, false));
+
+        $language = require dirname(__DIR__, 3) . '/src/Datetime/Lang/ar.php';
+
+        $pattern = $language['agoTexts']['units']['second'];
+
         $this->assertSame(
             '321 ثانية',
             MessageFormatter::formatMessage(
@@ -555,5 +432,13 @@ final class DatetimeHelperTest extends TestCase
                 ['count' => 321, 'number' => '321']
             )
         );
+    }
+
+    #[Test]
+    public function elapsedTime_fallsBackToFrenchForUnknownLocale(): void
+    {
+        DatetimeHelper::setLocale('br');
+
+        $this->assertSame('1 minute', DatetimeHelper::elapsedTime(60, 1, false));
     }
 }

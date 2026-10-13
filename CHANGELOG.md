@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-10-13
+
+### Added
+
+* Add language files for French, English, and Arabic.
+* Add automatic language selection based on the configured locale.
+* Add French as the fallback language when no matching language file is available.
+
+### Changed
+
+* Load localized text and ICU pluralization patterns from language files.
+* Load date format mappings from the selected language file.
+* Reset the language configuration and formatter caches when the locale changes.
+* Update the `README.md` and `DatetimeHelper` documentation.
+
+### Removed
+
+* Remove `setLanguageTexts()` and its recursive configuration logic.
+* Remove the static language text configuration previously stored in `DatetimeHelper` and `DatetimeConfig`.
+
 ## [1.5.0] - 2026-10-11
 
 ### Changed

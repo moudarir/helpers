@@ -36,17 +36,18 @@ trait DatetimeCalculationTrait
     public function ago(?DateTimeInterface $other = null, int $parts = 1, bool $absolute = false): string
     {
         try {
+            $texts = static::languageTexts();
+            $agoTexts = $texts['agoTexts'];
             $target = $other ?? static::now();
             $totalSeconds = abs($target->getTimestamp() - $this->getTimestamp());
 
             if ($totalSeconds < 5 && $absolute === false) {
-                return static::$agoTexts['now'];
+                return $agoTexts['now'];
             }
 
             $diff = $this->diff($target, true);
-            $days = $diff->d;
-            $weeks = intdiv($days, 7);
-            $remainingDays = $days % 7;
+            $weeks = intdiv($diff->d, 7);
+            $remainingDays = $diff->d % 7;
             $unitsQueue = [];
 
             if ($diff->y > 0) {
@@ -86,7 +87,7 @@ trait DatetimeCalculationTrait
             $formattedParts = [];
 
             foreach ($selectedUnits as [$value, $unitKey]) {
-                $pattern = static::$agoTexts['units'][$unitKey];
+                $pattern = $agoTexts['units'][$unitKey];
                 $formatted = static::formatPluralText($value, $pattern);
 
                 if ($formatted === '') {
@@ -103,7 +104,7 @@ trait DatetimeCalculationTrait
             }
 
             $isPast = $this->getTimestamp() <= $target->getTimestamp();
-            $template = $isPast ? static::$agoTexts['past'] : static::$agoTexts['future'];
+            $template = $isPast ? $agoTexts['past'] : $agoTexts['future'];
 
             return sprintf($template, $formattedText);
         } catch (Throwable $exception) {
@@ -118,16 +119,17 @@ trait DatetimeCalculationTrait
      */
     public static function elapsedTime(float|int $time, int $parts = 2, bool $short = true): string
     {
+        $texts = static::languageTexts();
         $totalMs = (int) round($time * 1000);
 
         if ($totalMs <= 0) {
-            $pattern = $short ? static::$zeroText['short'] : static::$zeroText['long'];
+            $key = $short ? 'short' : 'long';
 
-            return static::formatPluralText(0, $pattern);
+            return static::formatPluralText(0, $texts['zeroText'][$key]);
         }
 
         $parts = max($parts, 1);
-        $units = $short ? static::$unitsShort : static::$unitsLong;
+        $units = $short ? $texts['unitsShort'] : $texts['unitsLong'];
 
         $output = [];
         $count = 0;

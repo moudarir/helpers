@@ -6,7 +6,6 @@ namespace Moudarir\Helpers\Datetime\Traits;
 
 use DateInvalidTimeZoneException;
 use DateTimeZone;
-use InvalidArgumentException;
 
 trait DatetimeConfigurationTrait
 {
@@ -34,147 +33,39 @@ trait DatetimeConfigurationTrait
     public static function setLocale(string $locale): void
     {
         static::$defaultLocale = $locale;
+        static::$languages = null;
         static::$formatterCache = [];
         static::$messageFormatterCache = [];
     }
 
-    /**
-     * Applies partial, recursively validated language text replacements.
-     *
-     * Unit values are ICU MessageFormat patterns.
-     * All replacements are validated before any configuration is changed.
-     *
-     * @param array<int, string>|null $unitsShort
-     * @param array<int, string>|null $unitsLong
-     * @param array{short?: string, long?: string}|null $zeroText
-     * @param array{
-     *     past?: string,
-     *     future?: string,
-     *     now?: string,
-     *     units?: array{
-     *         year?: string,
-     *         month?: string,
-     *         week?: string,
-     *         day?: string,
-     *         hour?: string,
-     *         minute?: string,
-     *         second?: string
-     *     }
-     * }|null $agoTexts
-     *
-     * @throws InvalidArgumentException
-     */
-    public static function setLanguageTexts(
-        ?array $unitsShort = null,
-        ?array $unitsLong = null,
-        ?array $zeroText = null,
-        ?array $agoTexts = null
-    ): void {
-        $nextUnitsShort = static::$unitsShort;
-        $nextUnitsLong = static::$unitsLong;
-        $nextZeroText = static::$zeroText;
-        $nextAgoTexts = static::$agoTexts;
+    protected static function languageLocale(): string
+    {
+        $locale = str_replace('-', '_', static::$defaultLocale);
+        $language = strtolower(explode('_', $locale, 2)[0]);
 
-        if ($unitsShort !== null && $unitsShort !== []) {
-            $nextUnitsShort = self::replaceLanguageTexts(
-                $nextUnitsShort,
-                $unitsShort,
-                'unitsShort'
-            );
+        if (preg_match('/^[a-z]{2,3}$/D', $language) !== 1) {
+            return 'fr';
         }
 
-        if ($unitsLong !== null && $unitsLong !== []) {
-            $nextUnitsLong = self::replaceLanguageTexts(
-                $nextUnitsLong,
-                $unitsLong,
-                'unitsLong'
-            );
-        }
+        $path = dirname(__DIR__) . '/Lang/' . $language . '.php';
 
-        if ($zeroText !== null && $zeroText !== []) {
-            $nextZeroText = self::replaceLanguageTexts(
-                $nextZeroText,
-                $zeroText,
-                'zeroText'
-            );
-        }
-
-        if ($agoTexts !== null && $agoTexts !== []) {
-            $nextAgoTexts = self::replaceLanguageTexts(
-                $nextAgoTexts,
-                $agoTexts,
-                'agoTexts'
-            );
-        }
-
-        if ($unitsShort !== null && $unitsShort !== []) {
-            static::$unitsShort = $nextUnitsShort;
-        }
-
-        if ($unitsLong !== null && $unitsLong !== []) {
-            static::$unitsLong = $nextUnitsLong;
-        }
-
-        if ($zeroText !== null && $zeroText !== []) {
-            static::$zeroText = $nextZeroText;
-        }
-
-        if ($agoTexts !== null && $agoTexts !== []) {
-            static::$agoTexts = $nextAgoTexts;
-        }
-
-        $textsChanged = ($unitsShort !== null && $unitsShort !== [])
-            || ($unitsLong !== null && $unitsLong !== [])
-            || ($zeroText !== null && $zeroText !== [])
-            || ($agoTexts !== null && $agoTexts !== []);
-
-        if ($textsChanged === true) {
-            static::$messageFormatterCache = [];
-        }
+        return is_file($path) ? $language : 'fr';
     }
 
-    /**
-     * Recursively replaces values while preserving unspecified keys.
-     *
-     * @param array<int|string, mixed> $current
-     * @param array<int|string, mixed> $replacement
-     * @return array<int|string, mixed>
-     *
-     * @throws InvalidArgumentException
-     */
-    private static function replaceLanguageTexts(array $current, array $replacement, string $path): array
+    protected static function languageTexts(): array
     {
-        foreach ($replacement as $key => $value) {
-            if (array_key_exists($key, $current) === false) {
-                throw new InvalidArgumentException(
-                    sprintf('Unknown language text key `%s` in `%s`.', $key, $path)
-                );
-            }
-
-            $keyPath = $path . '[' . $key . ']';
-            $expected = $current[$key];
-
-            if (is_array($expected)) {
-                if (is_array($value) === false) {
-                    throw new InvalidArgumentException(
-                        sprintf('Expected an array for `%s`.', $keyPath)
-                    );
-                }
-
-                $current[$key] = self::replaceLanguageTexts($expected, $value, $keyPath);
-
-                continue;
-            }
-
-            if (is_string($value) === false) {
-                throw new InvalidArgumentException(
-                    sprintf('Expected a string for `%s`.', $keyPath)
-                );
-            }
-
-            $current[$key] = $value;
+        if (static::$languages !== null) {
+            return static::$languages;
         }
 
-        return $current;
+        $language = static::languageLocale();
+        $dirname = dirname(__DIR__) . '/Lang/';
+        $texts = require $dirname . $language . '.php';
+
+        if (is_array($texts) === false) {
+            $texts = require $dirname . 'fr.php';
+        }
+
+        return static::$languages = $texts;
     }
 }

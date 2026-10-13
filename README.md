@@ -326,7 +326,7 @@ See the [NumberHelper documentation](docs/NumberHelper.md).
 
 ### DatetimeHelper
 
-`DatetimeHelper` extends PHP's native `DateTimeImmutable` and provides utilities for date parsing, timezone configuration, localized formatting, relative date representations, and duration calculations.
+`DatetimeHelper` extends PHP's native `DateTimeImmutable` and provides date manipulation, localized formatting, relative date descriptions, and elapsed duration formatting.
 
 #### `now()`
 
@@ -343,10 +343,6 @@ Changes the default timezone used by the helper.
 #### `setLocale()`
 
 Configures the locale used for localized date formatting.
-
-#### `setLanguageTexts()`
-
-Customizes the labels and templates used for human-readable durations and relative dates, with recursive validation of supplied values.
 
 #### `isoFormat()`
 

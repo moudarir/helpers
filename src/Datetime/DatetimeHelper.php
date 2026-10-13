@@ -24,19 +24,9 @@ class DatetimeHelper extends DateTimeImmutable
     use DatetimeFormattingTrait;
     use DatetimeCalculationTrait;
 
-    protected static string $defaultTimezone = DatetimeConfig::TIMEZONE;
+    protected static string $defaultTimezone = "UTC";
 
-    protected static string $defaultLocale = DatetimeConfig::LOCALE;
-
-    protected static array $isoFormatMap = DatetimeConfig::ISO_FORMAT_MAP;
-
-    protected static array $unitsShort = DatetimeConfig::SHORT_UNITS;
-
-    protected static array $unitsLong = DatetimeConfig::LONG_UNITS;
-
-    protected static array $zeroText = DatetimeConfig::ZERO_TEXTS;
-
-    protected static array $agoTexts = DatetimeConfig::AGO_TEXTS;
+    protected static string $defaultLocale = "fr";
 
     protected static ?DateTimeZone $tzCache = null;
 
@@ -49,6 +39,8 @@ class DatetimeHelper extends DateTimeImmutable
      * @var array<string, MessageFormatter>
      */
     protected static array $messageFormatterCache = [];
+
+    private static ?array $languages = null;
 
     public static function now(): static
     {

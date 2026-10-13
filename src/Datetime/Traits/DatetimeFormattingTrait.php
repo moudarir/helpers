@@ -45,7 +45,8 @@ trait DatetimeFormattingTrait
     public function isoFormat(string $pattern): string
     {
         try {
-            $icuPattern = static::$isoFormatMap[$pattern] ?? $pattern;
+            $texts = static::languageTexts();
+            $icuPattern = $texts['isoFormatMap'][$pattern] ?? $pattern;
             $timezone = $this->getTimezone()->getName();
             $formatter = static::getDateFormatter($icuPattern, $timezone);
 
@@ -81,15 +82,14 @@ trait DatetimeFormattingTrait
                 throw new RuntimeException('ICU plural formatting requires the intl extension.');
             }
 
-            $key = static::$defaultLocale . '|' . $pattern;
+            $locale = static::languageLocale();
+            $key = $locale . '|' . $pattern;
 
             $formatter = static::$messageFormatterCache[$key]
-                ??= MessageFormatter::create(static::$defaultLocale, $pattern);
+                ??= MessageFormatter::create($locale, $pattern);
 
             if ($formatter === null) {
-                throw new RuntimeException(
-                    'Invalid ICU message pattern for locale "' . static::$defaultLocale . '".'
-                );
+                throw new RuntimeException('Invalid ICU pattern for locale "' . $locale . '".');
             }
 
             $message = $formatter->format([
