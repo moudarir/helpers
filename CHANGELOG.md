@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+---
+
+## [1.7.0] - 2026-10-20
+
+### Added
+
+* Add `Collector`, a lightweight collection utility helper.
+* Add array mapping, filtering, grouping, partitioning, and sorting operations.
+* Add unique-value selection and minimum/maximum value extraction.
+* Add array flattening, random selection, and item removal operations.
+* Add helpers for selecting, joining, and extracting values from arrays and iterables.
+* Add unit tests for `Collector`.
+* Add `Collector` documentation.
+
+### Changed
+
+* Update `README.md` to document `Collector`.
+
 ## [1.6.0] - 2026-10-13
 
 ### Added

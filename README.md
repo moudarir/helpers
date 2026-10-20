@@ -19,6 +19,7 @@ A collection of lightweight PHP helper classes with minimal external dependencie
   - [Sanitize Helper](#sanitizehelper)
   - [Number Helper](#numberhelper)
   - [Datetime Helper](#datetimehelper)
+  - [Collector Helper](#collector)
 - [License](#license)
 
 ## Requirements
@@ -363,6 +364,45 @@ Converts supported ISO 8601 durations into seconds.
 See the [DatetimeHelper documentation](docs/DatetimeHelper.md).
 
 **Requirements:** PHP 8.4 or higher. The `ext-intl` extension is required for `isoFormat()`.
+
+### Collector
+
+`Collector` provides a set of static utility methods for working with arrays and iterables. It simplifies common data manipulation tasks through a consistent API for transforming, filtering, grouping, sorting, and extracting values.
+
+Features include:
+
+- **Transformation and filtering:** map, filter, reject, partition, and predicate-based selection.
+- **Grouping and indexing:** group items by a key, property, or callback, and re-index items using computed keys.
+- **Sorting:** sort items by values, keys, properties, or multiple criteria, in ascending or descending order.
+- **Unique values and comparisons:** remove duplicates, perform strict uniqueness checks, and retrieve minimum or maximum values.
+- **Array manipulation:** split arrays into chunks, collapse nested iterables, flatten multidimensional arrays, and flip keys and values.
+- **Item selection:** retrieve the first or last matching item, remove items from the end of an array, and select random items.
+- **Value extraction and joining:** extract values from arrays or objects, check whether all items satisfy a condition, and join values into strings.
+
+Methods that accept a key or property name can also accept callbacks where supported. Original array keys are preserved where appropriate, with options to re-index results when needed.
+
+### Example
+
+```php
+use Moudarir\Helpers\Collector;
+
+$users = [
+    ['id' => 1, 'name' => 'Alice', 'active' => true],
+    ['id' => 2, 'name' => 'Bob', 'active' => false],
+    ['id' => 3, 'name' => 'Charlie', 'active' => true],
+];
+
+$activeUsers = Collector::filter(
+    $users,
+    static fn (array $user): bool => $user['active'] === true
+);
+
+$usersById = Collector::keyBy($activeUsers, 'id');
+
+$names = Collector::pluck($activeUsers, 'name');
+```
+
+See the [Collector documentation](docs/Collector.md) for the complete API reference and examples.
 
 ## License
 
