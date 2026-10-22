@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.7.1] - 2026-10-22
+
+### Added
+
+* Add `addMonths()` and `subMonths()` to `DatetimeHelper`.
+* Add start and end boundary methods for days, months, and years.
+* Set period end methods to the last microsecond.
+* Add unit tests and documentation for date modification methods.
+
 ## [1.7.0] - 2026-10-20
 
 ### Added

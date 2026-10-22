@@ -441,4 +441,105 @@ final class DatetimeHelperTest extends TestCase
 
         $this->assertSame('1 minute', DatetimeHelper::elapsedTime(60, 1, false));
     }
+
+    #[Test]
+    public function addMonths_itAddsMonthsWithoutModifyingOriginal(): void
+    {
+        $date = new DatetimeHelper('2026-01-15 12:34:56.123456');
+
+        $result = $date->addMonths(2);
+
+        self::assertSame(
+            ['2026-03-15 12:34:56.123456', '2026-01-15 12:34:56.123456'],
+            [$result->format('Y-m-d H:i:s.u'), $date->format('Y-m-d H:i:s.u')]
+        );
+
+        self::assertNotSame($date, $result);
+    }
+
+    #[Test]
+    public function subMonths_itSubtractsMonthsAcrossYearBoundary(): void
+    {
+        $date = new DatetimeHelper('2026-01-15 12:34:56.123456');
+
+        $result = $date->subMonths();
+
+        self::assertSame('2025-12-15 12:34:56.123456', $result->format('Y-m-d H:i:s.u'));
+    }
+
+    #[Test]
+    public function startOfMonth_itReturnsFirstDayAtMidnight(): void
+    {
+        $date = new DatetimeHelper('2026-02-18 13:14:15.123456');
+
+        $result = $date->startOfMonth();
+
+        self::assertSame(
+            ['2026-02-01 00:00:00.000000', '2026-02-18 13:14:15.123456'],
+            [$result->format('Y-m-d H:i:s.u'), $date->format('Y-m-d H:i:s.u')]
+        );
+    }
+
+    #[Test]
+    public function endOfMonth_itReturnsLastDayAtLastMicrosecond(): void
+    {
+        $date = new DatetimeHelper('2024-02-12 13:14:15.123456');
+
+        $result = $date->endOfMonth();
+
+        self::assertSame('2024-02-29 23:59:59.999999', $result->format('Y-m-d H:i:s.u'));
+    }
+
+    #[Test]
+    public function startOfDay_itResetsTimeAndMicroseconds(): void
+    {
+        $date = new DatetimeHelper('2026-10-22 14:15:16.123456');
+
+        $result = $date->startOfDay();
+
+        self::assertSame('2026-10-22 00:00:00.000000', $result->format('Y-m-d H:i:s.u'));
+    }
+
+    #[Test]
+    public function endOfDay_itSetsLastMicrosecondOfDay(): void
+    {
+        $date = new DatetimeHelper('2026-10-22 14:15:16.123456');
+
+        $result = $date->endOfDay();
+
+        self::assertSame('2026-10-22 23:59:59.999999', $result->format('Y-m-d H:i:s.u'));
+    }
+
+    #[Test]
+    public function startOfYear_itReturnsFirstDayAtMidnight(): void
+    {
+        $date = new DatetimeHelper('2024-02-29 13:14:15.123456');
+
+        $result = $date->startOfYear();
+
+        self::assertSame('2024-01-01 00:00:00.000000', $result->format('Y-m-d H:i:s.u'));
+    }
+
+    #[Test]
+    public function endOfYear_itReturnsLastMicrosecondOfYear(): void
+    {
+        $date = new DatetimeHelper('2024-02-29 13:14:15.123456');
+
+        $result = $date->endOfYear();
+
+        self::assertSame('2024-12-31 23:59:59.999999', $result->format('Y-m-d H:i:s.u'));
+    }
+
+    #[Test]
+    public function subMonths_itCalculatesPreviousCalendarMonthFromMonthStart(): void
+    {
+        $date = new DatetimeHelper('2026-03-31 14:15:16.123456');
+
+        $previousMonth = $date->startOfMonth()->subMonths();
+
+        self::assertSame(
+            ['2026-02-01 00:00:00.000000', '2026-03-31 14:15:16.123456'],
+            [$previousMonth->format('Y-m-d H:i:s.u'), $date->format('Y-m-d H:i:s.u')]
+        );
+    }
 }

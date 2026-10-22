@@ -31,11 +31,23 @@ It uses PHP's native date and time functionality without requiring Carbon.
 
 ### Date Modification
 
+`DatetimeHelper` provides methods for shifting dates and setting the boundaries of days, months, and years.
+
+Since `DatetimeHelper` extends `DateTimeImmutable`, these methods return a new instance without modifying the original object.
+
 - [`modify()`](#modify)
 - [`addHours()`](#addhours)
 - [`subHours()`](#subhours)
 - [`addDays()`](#adddays)
 - [`subDays()`](#subdays)
+- [`addMonths()`](#addmonths)
+- [`subMonths()`](#submonths)
+- [`startOfDay()`](#startofday)
+- [`endOfDay()`](#endofday)
+- [`startOfMonth()`](#startofmonth)
+- [`endOfMonth()`](#endofmonth)
+- [`startOfYear()`](#startofyear)
+- [`endOfYear()`](#endofyear)
 
 ### Formatting
 
@@ -278,9 +290,9 @@ Integer arguments and strings containing a signed integer are interpreted as Uni
 
 ### Parameters
 
-| Parameter | Type              | Description                   |
-|-----------|-------------------|-------------------------------|
-| `$time`   | `int` or `string` | Unix timestamp or date string |
+| Parameter | Type          | Description                   |
+|-----------|---------------|-------------------------------|
+| `$time`   | `int\|string` | Unix timestamp or date string |
 
 ### Return Value
 
@@ -530,6 +542,229 @@ Result:
 
 ```text
 2023-12-31 12:00:00
+```
+
+---
+
+## `addMonths()`
+
+```php
+public function addMonths(int $months = 1): static
+```
+
+Returns a new instance with the specified number of months added.
+
+### Parameters
+
+| Parameter | Type  | Description             |
+|-----------|-------|-------------------------|
+| `$months` | `int` | Number of months to add |
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-01-15 12:00:00');
+
+$next = $date->addMonths(2);
+```
+
+Result:
+
+```text
+2024-03-15 12:00:00
+```
+
+---
+
+## `subMonths()`
+
+```php
+public function subMonths(int $months = 1): static
+```
+
+Subtracts the specified number of months from the current date and returns a new instance.
+
+### Parameters
+
+| Parameter | Type  | Description                  |
+|-----------|-------|------------------------------|
+| `$months` | `int` | Number of months to subtract |
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-03-15 12:00:00');
+
+$previous = $date->subMonths(2);
+```
+
+Result:
+
+```text
+2024-01-15 12:00:00
+```
+
+Month modification follows PHP's native date modification rules. Overflow can occur when the target month does not contain the current
+day number.
+
+To calculate the previous calendar month reliably, call `startOfMonth()` before `subMonths()`.
+
+Example:
+
+```php
+$date = new DatetimeHelper('2026-03-31 12:00:00');
+
+$previousMonth = $date->startOfMonth()->subMonths();
+```
+
+Result:
+
+```text
+2026-02-01 00:00:00
+```
+
+---
+
+## `startOfDay()`
+
+```php
+public function startOfDay(): static
+```
+
+Returns a new instance set to midnight on the current day.
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-01-02 12:30:45');
+
+$start = $date->startOfDay();
+```
+
+Result:
+
+```text
+2024-01-02 00:00:00
+```
+
+---
+
+## `endOfDay()`
+
+```php
+public function endOfDay(): static
+```
+
+Returns a new instance set to the last microsecond of the current day.
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-01-02 12:30:45');
+
+$end = $date->endOfDay();
+```
+
+Result:
+
+```text
+2024-01-02 23:59:59.999999
+```
+
+---
+
+## `startOfMonth()`
+
+```php
+public function startOfMonth(): static
+```
+
+Returns a new instance set to the first day of the month at midnight.
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-02-15 12:30:45');
+
+$start = $date->startOfMonth();
+```
+
+Result:
+
+```text
+2024-02-01 00:00:00
+```
+
+---
+
+## `endOfMonth()`
+
+```php
+public function endOfMonth(): static
+```
+
+Returns a new instance set to the last microsecond of the month.
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-02-15 12:30:45');
+
+$end = $date->endOfMonth();
+```
+
+Result:
+
+```text
+2024-02-29 23:59:59.999999
+```
+
+---
+
+## `startOfYear()`
+
+```php
+public function startOfYear(): static
+```
+
+Returns a new instance set to January 1 at midnight of the current year.
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-02-29 12:30:45');
+
+$start = $date->startOfYear();
+```
+
+Result:
+
+```text
+2024-01-01 00:00:00
+```
+
+---
+
+## `endOfYear()`
+
+```php
+public function endOfYear(): static
+```
+
+Returns a new instance set to the last microsecond of the current year.
+
+### Example
+
+```php
+$date = new DatetimeHelper('2024-02-29 12:30:45');
+
+$end = $date->endOfYear();
+```
+
+Result:
+
+```text
+2024-12-31 23:59:59.999999
 ```
 
 ---
@@ -881,11 +1116,11 @@ The `$parts` parameter controls the maximum number of non-zero units included in
 
 ### Parameters
 
-| Parameter | Type             | Default | Description                          |
-|-----------|------------------|---------|--------------------------------------|
-| `$time`   | `float` or `int` | —       | Duration in seconds                  |
-| `$parts`  | `int`            | `2`     | Maximum number of units displayed    |
-| `$short`  | `bool`           | `true`  | Uses abbreviated labels when enabled |
+| Parameter | Type         | Default | Description                          |
+|-----------|--------------|---------|--------------------------------------|
+| `$time`   | `float\|int` | —       | Duration in seconds                  |
+| `$parts`  | `int`        | `2`     | Maximum number of units displayed    |
+| `$short`  | `bool`       | `true`  | Uses abbreviated labels when enabled |
 
 ### Return Value
 
