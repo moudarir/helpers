@@ -22,6 +22,7 @@
 * [`hex()`](#hex)
 * [`containsArabic()`](#containsarabic)
 * [`onlyArabic()`](#onlyarabic)
+* [`containsOnlyEnumCases()`](#containsonlyenumcases)
 
 ### `validUrl()`
 
@@ -705,4 +706,47 @@ IsHelper::onlyArabic('');
 
 IsHelper::onlyArabic('مرحبا Hello');
 // false
+```
+
+---
+
+### `containsOnlyEnumCases()`
+
+```php
+public static function containsOnlyEnumCases(string $enumClass, array $cases = [], bool $emptyArrayIsValid = true): bool
+```
+
+Checks if an array contains exclusively instances of a specific enum.
+
+Throws `InvalidArgumentException` if the provided class name is not a valid Enum.
+
+#### Parameters
+
+| Parameter            | Type     | Default | Description                                                      |
+|----------------------|----------|---------|------------------------------------------------------------------|
+| `$enumClass`         | `string` | —       | The fully qualified class name of the enum (e.g., MyEnum::class) |
+| `$cases`             | `array`  | `[]`    | The array of elements to test                                    |
+| `$emptyArrayIsValid` | `bool`   | `true`  | Defines whether an empty array should be considered valid        |
+
+
+#### Examples
+
+```php
+IsHelper::containsOnlyEnumCases(EnumProtocol::class, [], false);
+// false
+```
+
+```php
+IsHelper::containsOnlyEnumCases(EnumProtocol::class, [], true);
+// true
+```
+
+```php
+IsHelper::containsOnlyEnumCases(EnumProtocol::class, [EnumProtocol::FTP, 'not valid']);
+// false
+```
+
+```php
+IsHelper::containsOnlyEnumCases(EnumProtocol::class, [EnumProtocol::FTP]);
+// true
 ```

@@ -940,4 +940,32 @@ final class IsHelperTest extends TestCase
     {
         self::assertFalse(IsHelper::onlyArabic('Hello مرحبا 123'));
     }
+
+    #[Test]
+    public function containsOnlyEnumCases_returnFalseIfCasesNotProvided(): void
+    {
+        self::assertFalse(IsHelper::containsOnlyEnumCases(
+            EnumProtocol::class,
+            [],
+            false
+        ));
+    }
+
+    #[Test]
+    public function containsOnlyEnumCases_returnFalseIfCasesContainsOtherElements(): void
+    {
+        self::assertFalse(IsHelper::containsOnlyEnumCases(
+            EnumProtocol::class,
+            [EnumProtocol::FTP, 'not valid']
+        ));
+    }
+
+    #[Test]
+    public function containsOnlyEnumCases_returnTrueIfCasesAreProvided(): void
+    {
+        self::assertTrue(IsHelper::containsOnlyEnumCases(
+            EnumProtocol::class,
+            [EnumProtocol::FTP],
+        ));
+    }
 }

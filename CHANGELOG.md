@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.7.2] - 2026-11-02
+
+### Added
+
+* Add `containsOnlyEnumCases()` to `IsHelper` class.
+* Add unit tests and documentation.
+
 ## [1.7.1] - 2026-10-22
 
 ### Added

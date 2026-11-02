@@ -179,6 +179,10 @@ Validates hexadecimal values with an optional `0x` or `0X` prefix.
 
 `containsArabic()` checks whether a string contains Arabic characters, while `onlyArabic()` ensures that the string contains no letters from another script.
 
+#### `containsOnlyEnumCases()`
+
+Checks if an array contains exclusively instances of a specific enum.
+
 See the [IsHelper documentation](docs/IsHelper.md).
 
 ### EncryptionHelper

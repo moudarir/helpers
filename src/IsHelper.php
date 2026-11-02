@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moudarir\Helpers;
 
+use InvalidArgumentException;
 use Moudarir\Helpers\Enums\EnumProtocol;
 
 final class IsHelper
@@ -152,5 +153,32 @@ final class IsHelper
     public static function onlyArabic(string $string): bool
     {
         return preg_match('/(?!\p{Arabic})\p{L}/u', $string) !== 1;
+    }
+
+    /**
+     * Checks if an array contains exclusively instances of a specific enum.
+     *
+     * @param string $enumClass The fully qualified class name of the enum (e.g., MyEnum::class)
+     * @param array $cases The array of elements to test
+     * @param bool $emptyArrayIsValid Defines whether an empty array should be considered valid
+     *
+     * @throws InvalidArgumentException If the provided class name is not a valid Enum
+     */
+    public static function containsOnlyEnumCases(
+        string $enumClass,
+        array $cases = [],
+        bool $emptyArrayIsValid = true
+    ): bool
+    {
+        // Guard clause: Ensure the provided string is a valid Enum
+        if (enum_exists($enumClass) === false) {
+            throw new InvalidArgumentException(sprintf('`%s` is not a valid Enum.', $enumClass));
+        }
+
+        if ($cases === []) {
+            return $emptyArrayIsValid;
+        }
+
+        return array_all($cases, static fn ($item): bool => $item instanceof $enumClass);
     }
 }
